@@ -1,43 +1,48 @@
+# RV32I Single-Cycle CPU
 
-# RISC-V RV32I Processor Design
+A small RISC-V processor written in Verilog as an educational ASIC design project. The CPU uses a single-cycle datapath: instructions are fetched from an internal instruction memory, decoded, and executed before the next clock edge. It is not a pipelined processor.
 
-A 32-bit RISC-V processor implemented in Verilog HDL as an educational project to explore processor architecture, digital design, and instruction execution.
+## What it supports
 
-## Features
+The implemented subset includes:
 
-- ALU for arithmetic and logical operations
-- 32-bit register file
-- Instruction decoder and immediate generator
-- Instruction and data memory modules
-- CPU datapath and control logic
-- Sample program and testbench for simulation
+- Arithmetic and logic: `ADD`, `SUB`, `AND`, `OR`, `XOR`, `SLT`, `ADDI`, `ANDI`, `ORI`, `XORI`, `SLTI`
+- Memory: `LW`, `SW` for 32-bit words
+- Control flow: `BEQ`, `BNE`, `JAL`
+- Upper immediates: `LUI`, `AUIPC`
+- `FENCE`, treated as a no-op
 
-## Architecture
+Unsupported instructions, including `ECALL` and `JALR`, stop execution and set `halted`. The halt remains asserted until reset. This project does not implement the full RV32I specification, exceptions, CSRs, interrupts, byte or halfword memory accesses, or a pipeline. The instruction and data memories are internal Verilog arrays; alignment faults and memory-mapped peripherals are not implemented.
 
-The processor integrates instruction decoding, register operations, ALU execution, memory access, and control-flow handling to demonstrate the fundamental components of a RISC-V-based CPU.
+## Design
 
-## Tools
+The top-level `rv32i_cpu` connects the instruction memory, control unit, immediate generator, register file, ALU, and data memory. The register file has two read ports and one write port, and reads from `x0` always return zero. The CPU interface is `clk`, active-high asynchronous `reset`, and `halted`.
 
-- **HDL:** Verilog
-- **Simulation:** Icarus Verilog
-- **Waveform Analysis:** GTKWave
-- **FPGA Development:** Xilinx Vivado
+## Run the simulation
 
-## Getting Started
+From the project root in PowerShell, with Icarus Verilog installed:
 
-1. Clone or download this repository.
-2. Compile the Verilog source files and testbench using Icarus Verilog.
-3. Run the generated simulation executable.
-4. Open the generated waveform file in GTKWave, if configured in the testbench.
+```powershell
+.\scripts\simulate.ps1
+```
 
-## Project Scope
+The self-checking testbench runs every supported instruction behavior and checks register updates, `x0`, word loads and stores, branch and jump behavior, and the illegal-instruction halt. The testbench passed in the available environment: **PASS, 22 cycles**. The simulator (`vvp`) exited successfully. The installed Windows `iverilog` executable reports an access-violation exit status after producing its output file; the script runs the generated simulation image and reports its result.
 
-This is an educational implementation of a subset of RV32I-style instructions. It is intended for learning and experimentation, not as a fully compliant RISC-V processor.
+## Project files
 
-## Author
+- `rtl/` contains the processor modules.
+- `tb/tb_rv32i_cpu.v` contains the self-checking testbench.
+- `programs/smoke.hex` is a short example program. `programs/selfcheck.hex` is the testbench's initialized memory image.
+- `scripts/simulate.ps1` compiles and runs the testbench.
+- `scripts/synth.ys` and `scripts/synthesize.ps1` are provided for generic Yosys synthesis.
+- `openlane/config.json` and `constraints/asic.sdc` are starter physical-design configuration files.
 
-**Himansh Solanki**  
-Electronics and Communication Engineering  
-National Institute of Technology Goa
+## Synthesis and physical design
 
-[GitHub Profile](https://github.com/Himanshsolanki)
+Yosys, OpenLane, OpenROAD, Docker, and the SKY130 PDK were not available in the environment used for this project, so synthesis and physical design have not been run. To try generic synthesis where Yosys is installed, run:
+
+```powershell
+.\scripts\synthesize.ps1
+```
+
+The OpenLane configuration is a starting point and may need adjustment for the installed OpenLane version. This repository does not include a generated GDSII file or measured area, timing, power, DRC, or LVS results.
