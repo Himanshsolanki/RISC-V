@@ -1,0 +1,6 @@
+read_verilog rtl/alu.v rtl/control_unit.v rtl/data_memory.v rtl/immediate_generator.v rtl/instruction_memory.v rtl/register_file.v rtl/rv32i_cpu.v
+hierarchy -check -top rv32i_cpu
+proc; opt; memory; opt
+check
+tee -o reports/stat.txt stat
+write_verilog -noattr build/rv32i_cpu_synth.v

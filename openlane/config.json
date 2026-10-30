@@ -1,0 +1,13 @@
+{
+  "DESIGN_NAME": "rv32i_cpu",
+  "VERILOG_FILES": "dir::../rtl/alu.v dir::../rtl/control_unit.v dir::../rtl/data_memory.v dir::../rtl/immediate_generator.v dir::../rtl/instruction_memory.v dir::../rtl/register_file.v dir::../rtl/rv32i_cpu.v",
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 20,
+  "FP_CORE_UTIL": 30,
+  "PL_TARGET_DENSITY": 0.35,
+  "PDK": "sky130A",
+  "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+  "DIE_AREA": "0 0 300 300",
+  "DESIGN_IS_CORE": false,
+  "SYNTH_TOP": "rv32i_cpu"
+}
